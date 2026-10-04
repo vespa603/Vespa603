@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #000000;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+        .footer {
+            font-size: 14px;
+            color: #999;
+        }
+        #secret-terminal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000c18;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 40px;
+            box-sizing: border-box;
+            z-index: 9999;
+        }
+        .terminal-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .ascii-art {
+            white-space: pre;
+            color: #00ff66;
+            font-size: 12px;
+            line-height: 1.2;
+            margin-bottom: 30px;
+        }
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #00ff66;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            width: 300px;
+            outline: none;
+            padding: 5px;
+        }
+        button {
+            background: #00ff66;
+            color: #000;
+            border: none;
+            padding: 7px 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        button:hover {
+            background: #00cc52;
+        }
+        #success-screen {
+            display: none;
+            color: #00ffcc;
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        #trigger-zone {
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-container" id="error-page">
+        <h1>404 Not Found</h1>
+        <p>The requested URL was <span id="trigger-zone" onclick="checkClicks()">not</span> found on this server.</p>
+        <hr>
+        <p class="footer">Apache/2.4.41 (Ubuntu) Server at vespa603.com Port 80</p>
+    </div>
+
+    <div id="secret-terminal">
+        <div class="terminal-content">
+            <div class="ascii-art">
+           .
+          / \
+         // \\
+        ///   \\
+       ////     \\\
+      /////       \\\
+     //////       //////
+    //////         //////
+   //////   /| |\   //////
+  //////   / | | \   //////
+ //////   /  | |  \   //////
+//////   /   | |   \   //////
+ ||||   /    | |    \   ||||
+ ||||  /     | |     \  ||||
+  \\  /      | |      \  //
+   \\/       | |       \//
+            </div>
+            
+            <div id="login-form">
+                <p>> SISTEM DEPRESE EDILDI. ANAHTARI GIRINIZ...</p>
+                <p>> FORMAT: kullanici_adi/sifre</p>
+                <span>$ </span>
+                <input type="text" id="passkey" placeholder="..." autocomplete="off" onkeydown="if(event.key === 'Enter') verifyKey()">
+                <button onclick="verifyKey()">GIR</button>
+                <p id="error-msg" style="color: #ff3333; display: none;"></p>
+            </div>
+
+            <div id="success-screen">
+                <h2>> TEBRIKLER, SECILMIS KISI.</h2>
+                <hr style="border-top: 1px solid #00ffcc;">
+                <p>> Buyuk Geometry Dash macerası burada son buluyor.</p>
+                <p>> Butun kriptografik engelleri astın, kodları cozdun ve vespa603'un kalbine ulastın.</p>
+                <p>> Gizem aydınlandı. Hakikat serbest kaldı.</p>
+                <p style="font-size: 20px; color: #fff; font-weight: bold;">> [ MACERA TAMAMLANDI ]</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let clickCount = 0;
+
+        function checkClicks() {
+            clickCount++;
+            if (clickCount === 5) {
+                document.getElementById('error-page').style.display = 'none';
+                document.getElementById('secret-terminal').style.display = 'block';
+                document.getElementById('passkey').focus();
+            }
+        }
+
+        function verifyKey() {
+            const input = document.getElementById('passkey').value.trim();
+            const correctKey = "alionin2/vespa603";
+            const errorMsg = document.getElementById('error-msg');
+
+            if (input === correctKey) {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+            } else {
+                errorMsg.innerText = "> HATALI ANAHTAR. Gecersiz frekans tespiti. Izleniyorsunuz.";
+                errorMsg.style.display = 'block';
+                document.getElementById('passkey').value = "";
+            }
+        }
+    </script>
+</body>
+</html>
