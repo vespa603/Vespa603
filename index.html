@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 Not Found</title>
+    <title id="site-title">404 Not Found</title>
     <style>
         body {
             background-color: #f0f0f0;
@@ -17,6 +17,34 @@
             margin: 0;
             user-select: none;
         }
+        
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .lang-btn {
+            background: #e0e0e0;
+            border: 1px solid #aaa;
+            color: #333;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 14px;
+            margin-left: 5px;
+            border-radius: 3px;
+        }
+        .lang-btn:hover {
+            background: #ccc;
+        }
+        .lang-btn.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
         .error-container {
             text-align: center;
             max-width: 600px;
@@ -41,6 +69,7 @@
             font-size: 14px;
             color: #999;
         }
+
         #secret-terminal {
             display: none;
             position: fixed;
@@ -48,12 +77,13 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #000c18;
+            background-color: #000c18; 
             color: #00ff66;
             font-family: 'Courier New', Courier, monospace;
             padding: 40px;
             box-sizing: border-box;
             z-index: 9999;
+            overflow-y: auto;
         }
         .terminal-content {
             max-width: 800px;
@@ -77,7 +107,7 @@
             outline: none;
             padding: 5px;
         }
-        button {
+        .terminal-btn {
             background: #00ff66;
             color: #000;
             border: none;
@@ -88,7 +118,7 @@
             font-weight: bold;
             margin-left: 10px;
         }
-        button:hover {
+        .terminal-btn:hover {
             background: #00cc52;
         }
         #success-screen {
@@ -102,14 +132,20 @@
         }
         #trigger-zone {
             cursor: default;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
+    <div class="lang-switcher">
+        <button class="lang-btn active" id="btn-tr" onclick="changeLanguage('tr')">TR</button>
+        <button class="lang-btn" id="btn-en" onclick="changeLanguage('en')">EN</button>
+    </div>
+
     <div class="error-container" id="error-page">
-        <h1>404 Not Found</h1>
-        <p>The requested URL was <span id="trigger-zone" onclick="checkClicks()">not</span> found on this server.</p>
+        <h1 id="err-title">404 Not Found</h1>
+        <p id="err-text">The requested URL was <span id="trigger-zone" onclick="checkClicks()">not</span> found on this server.</p>
         <hr>
         <p class="footer">Apache/2.4.41 (Ubuntu) Server at vespa603.com Port 80</p>
     </div>
@@ -119,10 +155,10 @@
             <div class="ascii-art">
            .
           / \
-         // \\
-        ///   \\
-       ////     \\\
-      /////       \\\
+         // \\\
+        ///   \\\
+       ////     \\\\
+      /////       \\\\\
      //////       //////
     //////         //////
    //////   /| |\   //////
@@ -136,27 +172,92 @@
             </div>
             
             <div id="login-form">
-                <p>> SISTEM DEPRESE EDILDI. ANAHTARI GIRINIZ...</p>
-                <p>> FORMAT: kullanici_adi/sifre</p>
+                <p id="term-msg-1">> SISTEM DEPRESE EDILDI. ANAHTARI GIRINIZ...</p>
+                <p id="term-msg-2">> FORMAT: kullanici_adi/sifre</p>
                 <span>$ </span>
                 <input type="text" id="passkey" placeholder="..." autocomplete="off" onkeydown="if(event.key === 'Enter') verifyKey()">
-                <button onclick="verifyKey()">GIR</button>
+                <button class="terminal-btn" id="term-btn-text" onclick="verifyKey()">GIR</button>
                 <p id="error-msg" style="color: #ff3333; display: none;"></p>
             </div>
 
             <div id="success-screen">
-                <h2>> TEBRIKLER, SECILMIS KISI.</h2>
+                <h2 id="final-title">> TEBRIKLER, SECILMIS KISI.</h2>
                 <hr style="border-top: 1px solid #00ffcc;">
-                <p>> Buyuk Geometry Dash macerası burada son buluyor.</p>
-                <p>> Butun kriptografik engelleri astın, kodları cozdun ve vespa603'un kalbine ulastın.</p>
-                <p>> Gizem aydınlandı. Hakikat serbest kaldı.</p>
-                <p style="font-size: 20px; color: #fff; font-weight: bold;">> [ MACERA TAMAMLANDI ]</p>
+                <p id="final-p1">> Buyuk Geometry Dash macerası burada son buluyor.</p>
+                <p id="final-p2">> Butun kriptografik engelleri astın, kodları cozdun ve vespa603'un kalbine ulastın.</p>
+                <p id="final-p3">> Gizem aydınlandı. Hakikat serbest kaldı.</p>
+                <p style="font-size: 20px; color: #fff; font-weight: bold;" id="final-status">> [ MACERA TAMAMLANDI ]</p>
             </div>
         </div>
     </div>
 
     <script>
         let clickCount = 0;
+        let currentLang = 'tr';
+
+        const translations = {
+            tr: {
+                errTitle: "404 Not Found",
+                errTextBefore: "The requested URL was ",
+                errTextTrigger: "not",
+                errTextAfter: " found on this server.",
+                termMsg1: "> SISTEM DEPRESE EDILDI. ANAHTARI GIRINIZ...",
+                termMsg2: "> FORMAT: kullanici_adi/sifre",
+                termBtn: "GIR",
+                termError: "> HATALI ANAHTAR. Gecersiz frekans tespiti. Izleniyorsunuz.",
+                finalTitle: "> TEBRIKLER, SECILMIS KISI.",
+                finalP1: "> Buyuk Geometry Dash macerası burada son buluyor.",
+                finalP2: "> Butun kriptografik engelleri astın, kodları cozdun ve vespa603'un kalbine ulastın.",
+                finalP3: "> Gizem aydınlandı. Hakikat serbest kaldı.",
+                finalStatus: "> [ MACERA TAMAMLANDI ]",
+                btnText: "GIR"
+            },
+            en: {
+                errTitle: "404 Not Found",
+                errTextBefore: "The requested URL was ",
+                errTextTrigger: "not",
+                errTextAfter: " found on this server.",
+                termMsg1: "> SYSTEM DEPRESSED. ENTER THE KEY...",
+                termMsg2: "> FORMAT: username/password",
+                termBtn: "ENTER",
+                termError: "> INVALID KEY. Invalid frequency detected. You are being watched.",
+                finalTitle: "> CONGRATULATIONS, CHOSEN ONE.",
+                finalP1: "> The great Geometry Dash odyssey ends here.",
+                finalP2: "> You have bypassed all cryptographic barriers, cracked the codes, and reached the heart of vespa603.",
+                finalP3: "> The mystery is illuminated. Truth is liberated.",
+                finalStatus: "> [ ODYSSEY COMPLETED ]",
+                btnText: "ENTER"
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            document.getElementById('btn-tr').classList.remove('active');
+            document.getElementById('btn-en').classList.remove('active');
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            document.getElementById('term-msg-1').innerText = translations[lang].termMsg1;
+            document.getElementById('term-msg-2').innerText = translations[lang].termMsg2;
+            document.getElementById('term-btn-text').innerText = translations[lang].btnText;
+            
+            document.getElementById('final-title').innerText = translations[lang].finalTitle;
+            document.getElementById('final-p1').innerText = translations[lang].finalP1;
+            document.getElementById('final-p2').innerText = translations[lang].finalP2;
+            document.getElementById('final-p3').innerText = translations[lang].finalP3;
+            document.getElementById('final-status').innerText = translations[lang].finalStatus;
+
+            const langButtons = document.querySelectorAll('.lang-btn');
+            if (document.getElementById('secret-terminal').style.display === 'block') {
+                langButtons.forEach(btn => {
+                    btn.style.background = '#000c18';
+                    btn.style.color = '#00ff66';
+                    btn.style.borderColor = '#00ff66';
+                });
+                document.querySelector('.lang-btn.active').style.background = '#00ff66';
+                document.querySelector('.lang-btn.active').style.color = '#000c18';
+            }
+        }
 
         function checkClicks() {
             clickCount++;
@@ -164,23 +265,9 @@
                 document.getElementById('error-page').style.display = 'none';
                 document.getElementById('secret-terminal').style.display = 'block';
                 document.getElementById('passkey').focus();
+                changeLanguage(currentLang);
             }
         }
 
         function verifyKey() {
             const input = document.getElementById('passkey').value.trim();
-            const correctKey = "alionin2/vespa603";
-            const errorMsg = document.getElementById('error-msg');
-
-            if (input === correctKey) {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('success-screen').style.display = 'block';
-            } else {
-                errorMsg.innerText = "> HATALI ANAHTAR. Gecersiz frekans tespiti. Izleniyorsunuz.";
-                errorMsg.style.display = 'block';
-                document.getElementById('passkey').value = "";
-            }
-        }
-    </script>
-</body>
-</html>
